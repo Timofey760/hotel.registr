@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация и Вход</title>
+    <script src="libs/sweetalert2@11"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #ccc;
+        }
+        .tabs button {
+            background: none;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            outline: none;
+        }
+        .tabs button.active {
+            border-bottom: 2px solid #007BFF;
+            color: #007BFF;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        .form-group button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007BFF;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+        .form-group button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="tabs">
+            <button class="tab-button active" data-tab="login">Вход</button>
+            <button class="tab-button" data-tab="register">Регистрация</button>
+        </div>
+        <div class="tab-content active" id="login">
+            <div class="form-group">
+                <label for="login-email">Email</label>
+                <input type="email" id="login-email" placeholder="Введите ваш email">
+            </div>
+            <div class="form-group">
+                <label for="login-password">Пароль</label>
+                <input type="password" id="login-password" placeholder="Введите ваш пароль">
+            </div>
+            <div class="form-group">
+                <button type="button">Войти</button>
+            </div>
+        </div>
+        <div class="tab-content" id="register">
+            <div class="form-group">
+                <label for="register-email">Email</label>
+                <input type="email" id="register-email" placeholder="Введите ваш email">
+            </div>
+            <div class="form-group">
+                <label for="register-password">Пароль</label>
+                <input type="password" id="register-password" placeholder="Введите ваш пароль">
+            </div>
+            <div class="form-group">
+                <label for="register-confirm-password">Подтвердите пароль</label>
+                <input type="password" id="register-confirm-password" placeholder="Подтвердите ваш пароль">
+            </div>
+            <div class="form-group">
+                <button type="button" onclick="registration()">Зарегистрироваться</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const tabs = document.querySelectorAll('.tab-button');
+            const contents = document.querySelectorAll('.tab-content');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function () {
+                    const target = document.getElementById(tab.dataset.tab);
+
+                    tabs.forEach(t => t.classList.remove('active'));
+                    contents.forEach(c => c.classList.remove('active'));
+
+                    tab.classList.add('active');
+                    target.classList.add('active');
+                });
+            });
+        });
+
+        function registration()
+        {
+            let email=document.getElementById('register-email').value;
+            let password1=document.getElementById('register-password').value;
+            let password2=document.getElementById('register-confirm-password').value;
+            if (password1!=password2)
+            {
+                             alert("Пароли не совпадают");
+                             return;
+            }
+            
+            console.log(email,password1,password2);
+            const data = {
+                'email': email,
+                'password': password1,
+                saved_time: new Date()
+            };
+            // Отправляем данные на сервер
+            fetch('php/registration.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+                .then(response => response.text)
+                .then(data => {
+                    console.log('Success:', data);
+                    Swal.fire({
+                        title: "Успешная регистрация",
+                        text: "Пользователь зарегистрирован",
+                        icon: "success"
+                    });
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        title: "Ошибка регистрации",
+                        text: "Ошибка при регистрации",
+                        icon: "error"
+                    });
+                });            
+        }
+
+        
+
+
+    </script>
+</body>
+</html>
