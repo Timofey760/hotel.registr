@@ -14,11 +14,13 @@ function logAction($message, $level = 'INFO') {
     file_put_contents($logFile, $logMessage, FILE_APPEND | LOCK_EX);
 }
 
-
+// 1. Получаем данные от страницы
+$data = json_decode(file_get_contents("php://input"),true);
 // Подключение к базе данных
 require_once 'config.php';
 
 logAction('Попытка создания соединения')
+
 // Создание соединения
 $conn = new mysqli($servername, $username, $password, $dbname);
 
@@ -28,11 +30,11 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-logAction('Connection succeced')
+logAction('Connection fine!')
 
 // Получение данных из формы
-$email = $_POST["email"];
-$pass = $_POST["password"];
+$email = $data["email"];
+$pass = $data["password"];
 $timecode = date("Y-m-d H:i:s"); // Текущее время
 
 logAction($email.':'.$pass)
