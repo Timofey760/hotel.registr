@@ -15,21 +15,15 @@ function logAction($message, $level = 'INFO') {
 }
 
 // Пример использования функции
-logAction('registration', 'INFO');
+logAction('login', 'INFO');
 
 require_once 'config.php';
 logAction('config.php connected', 'INFO');
 
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $email = $_POST['register-email'];
-    $passw = $_POST['register-password'];
-    $passw2 = $_POST['register-confirm-password'];
-    if ($passw!=$passw2)
-    {
-        echo '<script>alert("пароли не совпадают")</script> '; //json_encode(["success" => true]);
-        die();    
-    }
+    $email = $_POST['login-email'];
+    $passw = $_POST['login-password'];
 
 
 // Создание соединения
@@ -42,14 +36,19 @@ if ($conn->connect_error) {
     die(json_encode(["success" => false, "message" => "Connection failed: " . $conn->connect_error]));
 }
     
-    $sql = "INSERT INTO users (email, passw) VALUES ('$email', '$passw')";
+// Подготовка и выполнение SQL-запроса
+$stmt = $conn->prepare("SELECT * FROM users WHERE email = ? AND passw = ?");
+$stmt->bind_param("ss", $email, $passw);
+$stmt->execute();
 
-    if ($conn->query($sql) === TRUE) {
-        echo '<script>alert("пользователь зарегистрирован"); window.location.href = "../index.html";</script> '; //json_encode(["success" => true]);
+// Получение результата
+$result = $stmt->get_result();
+
+if ($result->num_rows > 0) {
+
+     echo '<script>alert("зашли");window.location.href = "../index.html";</script> '; //json_encode(["success" => true]);
     } else {
-        echo '<script>alert("произошла ошибка"); window.location.href = "../index.html";</script> '; //json_encode(["success" => true]);
-        logAction("message: " . $sql . "<br>" . $conn->error, 'ERROR');
-        //echo json_encode(["success" => false, "message" => "Error: " . $sql . "<br>" . $conn->error]);
+        echo '<script>alert("не зашли");window.location.href = "../login.html";</script> '; //json_encode(["success" => true]);        
     }
     $conn->close();
 }

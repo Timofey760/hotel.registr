@@ -1,5 +1,6 @@
-<?php
 
+<?php
+//резервирование номеров
 function logAction($message, $level = 'INFO') {
     // Определите путь к файлу лога
     $logFile = 'actions.log';
